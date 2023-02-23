@@ -15,5 +15,12 @@
   "bugs": {
     "url": "https://github.com/snailcreature/mod-pack/issues"
   },
-  "homepage": "https://github.com/snailcreature/mod-pack#readme"
+  "homepage": "https://github.com/snailcreature/mod-pack#readme",
+  "preferGlobal": true,
+  "directories": {
+    "bin": "./bin"
+  },
+  "dependencies": {
+    "yargs": "^17.7.1"
+  }
 }
