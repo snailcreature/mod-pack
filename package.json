@@ -1,0 +1,19 @@
+{
+  "name": "mod-pack",
+  "version": "1.0.0",
+  "description": "Create server and client modpack folders for CurseForge Minecraft Modpacks",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/snailcreature/mod-pack.git"
+  },
+  "author": "SnailCreature",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/snailcreature/mod-pack/issues"
+  },
+  "homepage": "https://github.com/snailcreature/mod-pack#readme"
+}
