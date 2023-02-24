@@ -8,13 +8,12 @@ const options = {
   "mp_version": "1.0.0",
   "minecraft_version": "1.0.0",
   "forge_version": "1.0.0",
-  "cf_api_key": "",
   "gameID": 432,
   "modlist": [],
   "resourcepacks": [],
 }
 
-if (fs.existsSync(cwd + '/minecraftinstance.json')) {
+if (fs.existsSync(cwd + '/minecraftinstance.json') && !fs.existsSync(cwd + '/mod-pack.conf.json')) {
   console.log('Minecraft Instance found in', cwd);
 
   fs.readFile(cwd + '/minecraftinstance.json', 'utf-8', (err, data) => {
@@ -28,24 +27,28 @@ if (fs.existsSync(cwd + '/minecraftinstance.json')) {
       options.forge_version = instance.baseModLoader.forgeVersion;
       console.log('Found Forge version', instance.baseModLoader.forgeVersion);
 
-      const progBar = new SingleBar({}, Presets.shades_classic);
+      const progBar = new SingleBar({
+        format: 'Discovering Mods | {bar} | {percentage}% || {value}/{total} Mods'
+      }, Presets.shades_classic);
       progBar.start(instance.installedAddons.length, 0);
-      instance.installedAddons.forEach((mod, index) => {
+      instance.installedAddons.forEach((mod) => {
         if (mod.packageType == 3) {
           options.resourcepacks.push({
             "name": mod.name,
             "author": mod.primaryAuthor,
-            "url": mod.webSiteUrl,
+            "url": mod.webSiteURL,
             "projectId": mod.addonID,
             "filename": mod.installedFile.fileName,
+            "fileId": mod.installedFile.id,
           });
         } else {
           options.modlist.push({
             "name": mod.name,
             "author": mod.primaryAuthor,
-            "url": mod.webSiteUrl,
+            "url": mod.webSiteURL,
             "projectId": mod.addonID,
             "filename": mod.installedFile.fileName,
+            "fileId": mod.installedFile.id,
             "installType": "both",
           });
         }
@@ -61,5 +64,5 @@ if (fs.existsSync(cwd + '/minecraftinstance.json')) {
     }
   });
 }
-
-console.log('This is the init task.');
+else if (fs.existsSync(cwd + '/mod-pack.conf.json')) console.warn('You have already initialised! Try running: mod-pack update');
+else console.warn('No Minecraft Instance');

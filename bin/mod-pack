@@ -6,10 +6,17 @@ const { hideBin } = require('yargs/helpers');
 const argv = yargs(hideBin(process.argv));
 
 argv
-.command('init [dir]', 'Create the required files', (yargs) => {
+.command('init', 'Create the required files', (yargs) => {
   return yargs;
 }, () => {
-  require('../scripts/init.js');
+  require('../scripts/init');
+})
+.parse();
+
+argv.command('update', 'Update mod list', (yargs) => {
+  return yargs;
+}, () => {
+  require('../scripts/update');
 })
 .parse();
 
