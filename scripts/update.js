@@ -81,7 +81,7 @@ if (fs.existsSync(cwd + '/mod-pack.conf.json')) {
               progBar.start(toAdd.length, 0);
               toAdd.forEach((mod) => {
                 if (mod.packageType == 3) {
-                  options.resourcepacks.push({
+                  config.resourcepacks.push({
                     "name": mod.name,
                     "author": mod.primaryAuthor,
                     "url": mod.webSiteURL,
@@ -90,7 +90,7 @@ if (fs.existsSync(cwd + '/mod-pack.conf.json')) {
                     "fileId": mod.installedFile.id,
                   });
                 } else {
-                  options.modlist.push({
+                  config.modlist.push({
                     "name": mod.name,
                     "author": mod.primaryAuthor,
                     "url": mod.webSiteURL,
@@ -104,9 +104,11 @@ if (fs.existsSync(cwd + '/mod-pack.conf.json')) {
               });
               progBar.stop();
             }
-
-            console.log('Update complete!');
           }
+          fs.writeFile(cwd + '/mod-pack.conf.json', JSON.stringify(config), (err) => {
+            if (err) console.warn('Update failed with error', err);
+            else console.log('Update complete!');
+          });
         });
       }
     });
