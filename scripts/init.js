@@ -1,4 +1,5 @@
 const fs = require('fs');
+const { SingleBar, Presets } = require('cli-progress');
 
 const cwd = process.cwd();
 
@@ -21,12 +22,14 @@ if (fs.existsSync(cwd + '/minecraftinstance.json')) {
     else {
       const instance = JSON.parse(data);
 
-      options.minecraft_version = instance.minecraftVersion;
-      console.log('Found Minecraft version', instance.minecraftVersion);
+      options.minecraft_version = instance.baseModLoader.minecraftVersion;
+      console.log('Found Minecraft version', instance.baseModLoader.minecraftVersion);
 
-      options.forge_version = instance.forgeVersion;
-      console.log('Found Forge version', instance.forgeVersion);
+      options.forge_version = instance.baseModLoader.forgeVersion;
+      console.log('Found Forge version', instance.baseModLoader.forgeVersion);
 
+      const progBar = new SingleBar({}, Presets.shades_classic);
+      progBar.start(instance.installedAddons.length, 0);
       instance.installedAddons.forEach((mod, index) => {
         if (mod.packageType == 3) {
           options.resourcepacks.push({
@@ -46,8 +49,9 @@ if (fs.existsSync(cwd + '/minecraftinstance.json')) {
             "installType": "both",
           });
         }
-        console.log(index.toString(), ': Found', mod.name);
+        progBar.increment();
       });
+      progBar.stop();
       console.log('All mods found!');
       fs.writeFile(cwd + '/mod-pack.conf.json', JSON.stringify(options), (err) => {
         if (err) console.log('Initialisation failed with error', err);
