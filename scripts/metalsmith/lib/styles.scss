@@ -1,0 +1,32 @@
+:root {
+  --main-bg-color: #F4F4f4;
+  --main-text-color: #191919;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --main-bg-color: #2C2C2C;
+    --main-text-color: #F4F4F4;
+  }
+}
+
+* {
+  font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+  color: var(--main-text-color);
+  background-color: var(--main-bg-color);
+}
+
+input[type="range"] {
+  width: 30vw;
+  margin: 0;
+}
+
+nav {
+  list-style-type: none;
+  ul {
+    li {
+      display: inline-block;
+      padding-right: 0.5rem;
+    }
+  }
+}
