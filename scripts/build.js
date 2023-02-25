@@ -194,7 +194,7 @@ if (fs.existsSync(cwd + '/mod-pack.conf.json')) {
             }, Presets.shades_classic);
             progBar.start(config.resourcepacks.length, 0);
             config.resourcepacks.forEach((pack) => {
-              fs.copyFile(`${cwd}/resourcepacks/${mod.filename}`, `${cwd}/${serverFoldername}/resourcepacks/${mod.filename}`, () => {
+              fs.copyFile(`${cwd}/resourcepacks/${pack.filename}`, `${cwd}/${serverFoldername}/resourcepacks/${pack.filename}`, () => {
                 progBar.increment();
               });
             });
