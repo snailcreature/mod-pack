@@ -64,6 +64,29 @@ if (fs.existsSync(cwd + '/minecraftinstance.json') && !fs.existsSync(cwd + '/mod
         if (err) console.warn('Initialisation failed with error', err);
         else console.log('Initialisation complete!')
       });
+      fs.mkdir(cwd + '/tutorials', () => {
+        fs.writeFile(cwd + '/tutorials/index.md', '---\ntitle: Home\nlayout: default.hbs\n---\n\nThis is the homepage!', (err) => {
+          if (err) console.error('Failed to create tutorials directory at', cwd);
+          else fs.mkdir(cwd + '/tutorials/modlist', () => {
+            let modlist = '\n\n## Mods\n\n';
+            options.modlist.forEach((mod) => {
+              modlist += `- [${mod.name} by ${mod.author}](${mod.url})\n`
+            });
+            let resourceList = '\n\n## Resource Packs\n\n';
+            options.resourcepacks.forEach((pack) => {
+              resourceList += `- [${pack.name} by ${pack.author}](${pack.url})\n`;
+            })
+            fs.writeFile(cwd + '/tutorials/modlist/index.md', '---\ntitle: Mods\nlayout: default.hbs\n---\n\nThese are the mods that are installed.' + modlist + resourceList, (err) => {
+              if (err) console.error(err);
+              else fs.mkdir(cwd + '/tutorials/tutorials', () => {
+                fs.writeFile(cwd + '/tutorials/tutorials/index.md', '---\ntitle: Tutorials\nlayout: default.hbs\n---\n\nThis is the landing page for your tutorials.', (err) => {
+                  if (err) console.log(err);
+                });
+              });
+            });
+          });
+        });
+      });
     }
   });
 }

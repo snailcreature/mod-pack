@@ -103,6 +103,9 @@ if (fs.existsSync(cwd + '/mod-pack.conf.json')) {
         progBar.stop();
         console.log('Includes copied!');
 
+        // Create tutorials
+        require('./metalsmith/rendertuts').writeTuts(foldername);
+
         const clientOut = fs.createWriteStream(`${cwd}/out/${foldername}.zip`);
         const clientZip = archiver('zip', {
           zlib: { level: 9 }

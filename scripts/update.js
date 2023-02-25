@@ -107,7 +107,20 @@ if (fs.existsSync(cwd + '/mod-pack.conf.json')) {
           }
           fs.writeFile(cwd + '/mod-pack.conf.json', JSON.stringify(config), (err) => {
             if (err) console.warn('Update failed with error', err);
-            else console.log('Update complete!');
+            else {
+              let modlist = '\n\n## Mods\n\n';
+              config.modlist.forEach((mod) => {
+                modlist += `- [${mod.name} by ${mod.author}](${mod.url})\n`
+              });
+              let resourceList = '\n\n## Resource Packs\n\n';
+              config.resourcepacks.forEach((pack) => {
+                resourceList += `- [${pack.name} by ${pack.author}](${pack.url})\n`;
+              });
+              fs.writeFile(cwd + '/tutorials/modlist/index.md', '---\ntitle: Mods\nlayout: default.hbs\n---\n\nThese are the mods that are installed.' + modlist + resourceList, (err) => {
+                if (err) console.error(err);
+                else console.log('Update complete!');
+              });
+            }
           });
         });
       }
