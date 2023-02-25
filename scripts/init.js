@@ -6,9 +6,13 @@ const cwd = process.cwd();
 const options = {
   "name": "Modpack Name",
   "mp_version": "1.0.0",
+  "server_version": "1.0.0",
   "minecraft_version": "1.0.0",
   "forge_version": "1.0.0",
   "gameID": 432,
+  "includes": [
+    "/config"
+  ],
   "modlist": [],
   "resourcepacks": [],
 }
@@ -57,9 +61,8 @@ if (fs.existsSync(cwd + '/minecraftinstance.json') && !fs.existsSync(cwd + '/mod
       progBar.stop();
       console.log('All mods found!');
       fs.writeFile(cwd + '/mod-pack.conf.json', JSON.stringify(options), (err) => {
-        if (err) console.log('Initialisation failed with error', err);
-        else 
-        console.log('Initialisation complete!')
+        if (err) console.warn('Initialisation failed with error', err);
+        else console.log('Initialisation complete!')
       });
     }
   });

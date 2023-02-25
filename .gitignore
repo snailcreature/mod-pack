@@ -4,3 +4,4 @@ node_modules
 minecraftinstance.json
 mod-pack.conf.json
 manifest.json
+out
