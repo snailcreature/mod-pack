@@ -12,6 +12,7 @@
   },
   "author": "SnailCreature",
   "license": "ISC",
+  "keywords": ["cli", "minecraft", "curseforge", "modpack", "forge"],
   "bugs": {
     "url": "https://github.com/snailcreature/mod-pack/issues"
   },
