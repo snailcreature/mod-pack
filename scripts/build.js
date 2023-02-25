@@ -163,18 +163,13 @@ if (fs.existsSync(cwd + '/mod-pack.conf.json')) {
               else console.log('Server mods directory found!');
             });
 
-            progBar = new SingleBar({
-              format: '[SERVER] Copying Mods | {bar} | {percentage}% || {value}/{total} Mods'
-            }, Presets.shades_classic);
-    
             let serverMods = config.modlist.filter(mod => mod.installType != 'client');
-            progBar.start(serverMods.length, 0);
-            serverMods.forEach((mod) => {
-              fs.copyFile(`${cwd}/mods/${mod.filename}`, `${cwd}/${serverFoldername}/mods/${mod.filename}`, () => {
-                progBar.increment();
-              });
+            fse.copy(cwd + `/mods`, `/out/${serverFoldername}/mods`, {
+              filter: (filename) => {
+                if (serverMods.find(mod => mod.filename == filename)) return true;
+                return false;
+              }
             });
-            progBar.stop();
           }
         });
         
@@ -187,18 +182,18 @@ if (fs.existsSync(cwd + '/mod-pack.conf.json')) {
                 fs.mkdir(cwd + `/out/${serverFoldername}/resourcepacks`, () => {});
               }
               else console.log('Server resourcepacks directory found!');
+            }, (err) => {
+              if (err) console.error(err);
             });
           
-            progBar = new SingleBar({
-              format: '[SERVER] Copying Resource Racks | {bar} | {percentage}% || {value}/{total} Resource Packs'
-            }, Presets.shades_classic);
-            progBar.start(config.resourcepacks.length, 0);
-            config.resourcepacks.forEach((pack) => {
-              fs.copyFile(`${cwd}/resourcepacks/${pack.filename}`, `${cwd}/${serverFoldername}/resourcepacks/${pack.filename}`, () => {
-                progBar.increment();
-              });
+            fse.copy(cwd + `/resourcepacks`, `/out/${serverFoldername}/resourcepacks`, {
+              filter: (filename) => {
+                if (config.resourcepacks.find(pack => pack.filename == filename)) return true;
+                return false;
+              }
+            }, (err) => {
+              if (err) console.error(err);
             });
-            progBar.stop();
           }
         });
 
