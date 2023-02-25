@@ -1,20 +1,20 @@
-# `mod-pack`
+# `modpack-pack`
 
 Unofficial tool to create server and client modpack folders for CurseForge Minecraft Modpacks.
 
-Install by running `npm i -g mod-pack`.
+Install by running `npm i -g modpack-pack`.
 
 ## Step 1: Make your modpack
 
 Create a custom Minecraft Forge modpack using the Curse launcher. Test your modpack thoroughly.
 
-**`mod-pack` uses the `minecraftinstance.json` file generated when you play modded Minecraft to create its listings and files.**
+**`modpack-pack` uses the `minecraftinstance.json` file generated when you play modded Minecraft to create its listings and files.**
 
-## Step 2: Initialise `mod-pack`
+## Step 2: Initialise `modpack-pack`
 
 Open your modpack's directory in a terminal window and run `mod-pack init`. This will create a `mod-pack.conf.json` file based on the Minecraft instance.
 
-## Step 3: Configure `mod-pack`
+## Step 3: Configure `modpack-pack`
 
 Open the `mod-pack.conf.json` file and check that all the information you need is included and correct.
 
@@ -88,10 +88,10 @@ This is the list of mods you have installed in your modpack. `modlist.mod.instal
 }
 ```
 
-## Step 4: Update `mod-pack`
+## Step 4: Update `modpack-pack`
 
 Let's say you have played your modpack a little more before deciding to build it and publish it on CurseForge. You've removed some mods, updated a few, and added a couple more. Run `mod-pack update` to update the config file on your modpack.
 
-## Step 5: Build `mod-pack`
+## Step 5: Build `modpack-pack`
 
 Run `mod-pack build` to compress your modpack. The result will be 2 directories and 2 zip files, one of each for the client version that will be installed by the CurseForge Client and for the serverpack version that can also be uploaded to CurseForge.
