@@ -163,13 +163,13 @@ if (fs.existsSync(cwd + '/mod-pack.conf.json')) {
               else console.log('Server mods directory found!');
             });
 
-            let serverMods = config.modlist.filter(mod => mod.installType != 'client');
-            fse.copy(cwd + `/mods`, `/out/${serverFoldername}/mods`, {
-              filter: (filename) => {
-                if (serverMods.find(mod => mod.filename == filename)) return true;
-                return false;
-              }
+            let serverMods = config.modlist.filter(mod => mod.installType == 'server' || mod.installType == 'both');
+            serverMods.forEach((mod) => {
+              fse.copy(`${cwd}/mods/${mod.filename}`, `${cwd}/out/${serverFoldername}/mods/${mod.filename}`, (err) => {
+                if (err) console.error(err);
+              })
             });
+            console.log('[SERVER] Mods copied!');
           }
         });
         
@@ -186,13 +186,9 @@ if (fs.existsSync(cwd + '/mod-pack.conf.json')) {
               if (err) console.error(err);
             });
           
-            fse.copy(cwd + `/resourcepacks`, `/out/${serverFoldername}/resourcepacks`, {
-              filter: (filename) => {
-                if (config.resourcepacks.find(pack => pack.filename == filename)) return true;
-                return false;
-              }
-            }, (err) => {
+            fse.copy(cwd + `/resourcepacks`, `/out/${serverFoldername}/resourcepacks`, (err) => {
               if (err) console.error(err);
+              else console.log('[SERVER] Resource packs copied!');
             });
           }
         });
