@@ -1,7 +1,7 @@
 {
   "name": "mod-pack",
   "version": "1.0.0",
-  "description": "Create server and client modpack folders for CurseForge Minecraft Modpacks",
+  "description": "Unofficial tool to create server and client modpack folders for CurseForge Minecraft Modpacks",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
