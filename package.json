@@ -1,6 +1,6 @@
 {
   "name": "modpack-pack",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Unofficial tool to create server and client modpack folders for CurseForge Minecraft Modpacks",
   "main": "index.js",
   "scripts": {
