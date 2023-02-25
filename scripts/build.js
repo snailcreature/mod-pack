@@ -1,6 +1,7 @@
 const fs = require('fs');
 const fse = require('fs-extra');
 const { SingleBar, Presets } = require('cli-progress');
+const archiver = require('archiver');
 
 console.log('Building...');
 
@@ -25,7 +26,7 @@ if (fs.existsSync(cwd + '/mod-pack.conf.json')) {
       const config = JSON.parse(data);
 
       let progBar = new SingleBar({
-        format: '[CLIENT] Building manifest.json | {bar} | {percentage}% || {value}/{total} Mods'
+        format: '[CLIENT] Building manifest.json and modlist.html | {bar} | {percentage}% || {value}/{total} Mods'
       }, Presets.shades_classic)
 
       const manifest = {
@@ -47,6 +48,8 @@ if (fs.existsSync(cwd + '/mod-pack.conf.json')) {
         "overrides": "overrides"
       }
 
+      let modlistHtml = `<h1>${config.name} - Version ${config.mp_version}</h1>\n\n<ul>\n`;
+
       progBar.start(config.modlist.concat(config.resourcepacks).length, 0);
       config.modlist.concat(config.resourcepacks).forEach((mod) => {
         manifest.files.push({
@@ -54,8 +57,12 @@ if (fs.existsSync(cwd + '/mod-pack.conf.json')) {
           "fileID": mod.fileId,
           "required": true
         });
+
+        modlistHtml += `<li><a href="${mod.url}">${mod.name} by ${mod.author}</a><li>\n`;
+
         progBar.increment();
       });
+      modlistHtml += '</ul>';
       progBar.stop();
 
       // Write client folder
@@ -68,7 +75,11 @@ if (fs.existsSync(cwd + '/mod-pack.conf.json')) {
         else console.log('Client directory found!');
 
         fs.writeFile(cwd + `/out/${foldername}/manifest.json`, JSON.stringify(manifest), () => {
-          console.log('manifest.json created!')
+          console.log('manifest.json added to client!');
+        });
+
+        fs.writeFile(cwd + `/out/${foldername}/modlist.html`, modlistHtml, () => {
+          console.log('modlist.html added to client!');
         });
 
         // Copy includes to client directory
@@ -91,6 +102,38 @@ if (fs.existsSync(cwd + '/mod-pack.conf.json')) {
         });
         progBar.stop();
         console.log('Includes copied!');
+
+        const clientOut = fs.createWriteStream(`${cwd}/out/${foldername}.zip`);
+        const clientZip = archiver('zip', {
+          zlib: { level: 9 }
+        });
+
+        clientOut.on('close', () => {
+          console.log(`Wrote ${clientZip.pointer()} bytes to ${cwd}/out/${foldername}.zip`);
+        });
+
+        clientOut.on('end', () => {
+          console.log('All client data saved.');
+        });
+
+        clientZip.on('warning', () => {
+          if (err.code === 'ENOENT') {
+            console.error('[CLIENT]', err);
+          } else {
+            // throw error
+            throw err;
+          }
+        });
+
+        clientZip.on('error', (err) => {
+          throw err;
+        });
+
+        clientZip.pipe(clientOut);
+
+        clientZip.directory(`${cwd}/out/${foldername}`, false);
+
+        clientZip.finalize();
       });
 
       // Create serverpack
@@ -101,6 +144,10 @@ if (fs.existsSync(cwd + '/mod-pack.conf.json')) {
           fs.mkdir(cwd + `/out/${serverFoldername}`, () => {});
         }
         else console.log('Server directory found!');
+
+        fs.writeFile(cwd + `/out/${serverFoldername}/modlist.html`, modlistHtml, () => {
+          console.log('modlist.html added to server!');
+        });
 
         fs.opendir(cwd + `/mods`, (err) => {
           if (err) console.error('No mods folder in', cwd);
@@ -173,6 +220,38 @@ if (fs.existsSync(cwd + '/mod-pack.conf.json')) {
         });
         progBar.stop();
         console.log('Includes copied to serverpack!');
+
+        const serverOut = fs.createWriteStream(`${cwd}/out/${serverFoldername}.zip`);
+        const serverZip = archiver('zip', {
+          zlib: { level: 9 }
+        });
+
+        serverOut.on('close', () => {
+          console.log(`Wrote ${serverZip.pointer()} bytes to ${cwd}/out/${serverFoldername}.zip`);
+        });
+
+        serverOut.on('end', () => {
+          console.log('All server data saved.');
+        });
+
+        serverZip.on('warning', () => {
+          if (err.code === 'ENOENT') {
+            console.error('[SERVER]', err);
+          } else {
+            // throw error
+            throw err;
+          }
+        });
+
+        serverZip.on('error', (err) => {
+          throw err;
+        });
+
+        serverZip.pipe(serverOut);
+
+        serverZip.directory(`${cwd}/out/${serverFoldername}`, false);
+
+        serverZip.finalize();
       });
     }
   });
