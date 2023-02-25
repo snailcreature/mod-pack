@@ -18,8 +18,12 @@
   "homepage": "https://github.com/snailcreature/mod-pack#readme",
   "preferGlobal": true,
   "directories": {
-    "bin": "./bin"
+    "bin": "./bin",
+    "man": "./man"
   },
+  "man": [
+    "./man/mod-pack.1"
+  ],
   "dependencies": {
     "archiver": "^5.3.1",
     "cli-progress": "^3.12.0",

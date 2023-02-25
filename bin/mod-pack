@@ -11,19 +11,19 @@ argv
 }, () => {
   require('../scripts/init');
 })
-.parse();
-
-argv.command('update', 'Update mod list', (yargs) => {
+.usage('mod-pack init')
+.command('update', 'Update mod list', (yargs) => {
   return yargs;
 }, () => {
   require('../scripts/update');
 })
-.parse();
-
-argv
+.usage('mod-pack update')
+.help()
 .command('build', 'Build the modpack files', (yargs) => {
   return yargs;
 }, () => {
   require('../scripts/build');
 })
+.usage('mod-pack build')
+.help()
 .parse();
