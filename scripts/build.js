@@ -1,7 +1,6 @@
 const fs = require('fs');
 const fse = require('fs-extra');
 const { SingleBar, Presets } = require('cli-progress');
-const archiver = require('archiver');
 
 console.log('Building...');
 
@@ -16,6 +15,8 @@ fs.opendir(cwd + '/out', (err) => {
   }
   else console.log('out directory found!')
 });
+
+setTimeout(() => {}, 1000);
 
 if (fs.existsSync(cwd + '/mod-pack.conf.json')) {
   console.log('mod-pack config file found in', cwd);
@@ -65,6 +66,8 @@ if (fs.existsSync(cwd + '/mod-pack.conf.json')) {
       modlistHtml += '</ul>';
       progBar.stop();
 
+      setTimeout(() => {}, 1000);
+
       // Write client folder
       const foldername = `${config.name.replaceAll(/\s/g, '')}-${config.mp_version.replaceAll(/\s/g, '')}`;
       fs.opendir(cwd + `/out/${foldername}`, (err) => {
@@ -78,9 +81,13 @@ if (fs.existsSync(cwd + '/mod-pack.conf.json')) {
           console.log('manifest.json added to client!');
         });
 
+        setTimeout(() => {}, 1000);
+
         fs.writeFile(cwd + `/out/${foldername}/modlist.html`, modlistHtml, () => {
           console.log('modlist.html added to client!');
         });
+
+        setTimeout(() => {}, 1000);
 
         // Copy includes to client directory
         progBar = new SingleBar({
@@ -93,9 +100,11 @@ if (fs.existsSync(cwd + '/mod-pack.conf.json')) {
             if (err) console.warn(`Directory ${cwd + dir} does not exist.`);
             else {
               fs.mkdir(`${cwd}/out/${foldername}/${dir}`, ()=>{});
+              setTimeout(() => {}, 500);
               fse.copy(cwd + dir, `${cwd}/out/${foldername}${dir}`,{ overwrite: true }, (err) => {
                 if (err) console.error('Failed to copy directory', cwd + dir, 'to client');
               });
+              setTimeout(() => {}, 500);
             }
           });
           progBar.increment();
@@ -106,38 +115,10 @@ if (fs.existsSync(cwd + '/mod-pack.conf.json')) {
         // Create tutorials
         require('./metalsmith/rendertuts').writeTuts(foldername);
 
-        const clientOut = fs.createWriteStream(`${cwd}/out/${foldername}.zip`);
-        const clientZip = archiver('zip', {
-          zlib: { level: 9 }
-        });
-
-        clientOut.on('close', () => {
-          console.log(`Wrote ${clientZip.pointer()} bytes to ${cwd}/out/${foldername}.zip`);
-        });
-
-        clientOut.on('end', () => {
-          console.log('All client data saved.');
-        });
-
-        clientZip.on('warning', () => {
-          if (err.code === 'ENOENT') {
-            console.error('[CLIENT]', err);
-          } else {
-            // throw error
-            throw err;
-          }
-        });
-
-        clientZip.on('error', (err) => {
-          throw err;
-        });
-
-        clientZip.pipe(clientOut);
-
-        clientZip.directory(`${cwd}/out/${foldername}`, false);
-
-        clientZip.finalize();
+        setTimeout(() => {}, 1000);
       });
+
+      setTimeout(() => {}, 5000);
 
       // Create serverpack
       const serverFoldername = foldername + `-server-${config.server_version.replaceAll(/\s/g, '')}`;
@@ -145,12 +126,18 @@ if (fs.existsSync(cwd + '/mod-pack.conf.json')) {
         if (err) {
           console.warn('Server directory does not exist. Creating...');
           fs.mkdir(cwd + `/out/${serverFoldername}`, () => {});
+
+          setTimeout(() => {}, 500);
         }
         else console.log('Server directory found!');
+
+        setTimeout(() => {}, 1000);
 
         fs.writeFile(cwd + `/out/${serverFoldername}/modlist.html`, modlistHtml, () => {
           console.log('modlist.html added to server!');
         });
+
+        setTimeout(() => {}, 1000);
 
         fs.opendir(cwd + `/mods`, (err) => {
           if (err) console.error('No mods folder in', cwd);
@@ -159,17 +146,33 @@ if (fs.existsSync(cwd + '/mod-pack.conf.json')) {
               if (err) {
                 console.warn('Server mods directory does not exist. Creating...');
                 fs.mkdir(cwd + `/out/${serverFoldername}/mods`, () => {});
+
+                setTimeout(() => {}, 500);
               }
               else console.log('Server mods directory found!');
             });
 
-            let serverMods = config.modlist.filter(mod => mod.installType == 'server' || mod.installType == 'both');
-            serverMods.forEach((mod) => {
-              fse.copy(`${cwd}/mods/${mod.filename}`, `${cwd}/out/${serverFoldername}/mods/${mod.filename}`, (err) => {
-                if (err) console.error(err);
-              })
+            setTimeout(() => {}, 1000);
+
+            let serverMods = config.modlist.filter(mod => mod.installType != 'client');
+            fse.emptyDir(`${cwd}/out/${serverFoldername}/mods/`, () => {
+              progBar = new SingleBar({
+                format: '[SERVER] Copying mods | {bar} | {percentage}% || {value}/{total} Mods'
+              }, Presets.shades_classic);
+              progBar.start(serverMods.length, 0);
+              serverMods.forEach((mod) => {
+                fse.copy(`${cwd}/mods/${mod.filename}`, `${cwd}/out/${serverFoldername}/mods/${mod.filename}`, (err) => {
+                  if (err) console.error(err);
+
+                  setTimeout(() => {}, 500);
+                });
+                progBar.increment();
+              });
+              progBar.stop();
+              console.log('[SERVER] Mods copied!');
             });
-            console.log('[SERVER] Mods copied!');
+
+            setTimeout(() => {}, 1000);
           }
         });
         
@@ -180,20 +183,27 @@ if (fs.existsSync(cwd + '/mod-pack.conf.json')) {
               if (err) {
                 console.warn('Server resourcepacks directory does not exist. Creating...');
                 fs.mkdir(cwd + `/out/${serverFoldername}/resourcepacks`, () => {});
+
+                setTimeout(() => {}, 500);
               }
               else console.log('Server resourcepacks directory found!');
             }, (err) => {
               if (err) console.error(err);
             });
-          
-            fse.copy(cwd + `/resourcepacks`, `/out/${serverFoldername}/resourcepacks`, (err) => {
-              if (err) console.error(err);
-              else console.log('[SERVER] Resource packs copied!');
+            fse.emptyDir(`${cwd}/out/${serverFoldername}/resourcepacks/`, () => {
+              fse.copy(cwd + `/resourcepacks`, `/out/${serverFoldername}/resourcepacks`, (err) => {
+                if (err) console.error(err);
+                else console.log('[SERVER] Resource packs copied!');
+              });
+
+              setTimeout(() => {}, 1000);
             });
+
+            setTimeout(() => {}, 1000);
           }
         });
 
-        // Copy includes to client directory
+        // Copy includes to server directory
         progBar = new SingleBar({
           format: '[SERVER] Copying includes | {bar} | {percentage}% || {value}/{total} Directories'
         }, Presets.shades_classic);
@@ -204,10 +214,12 @@ if (fs.existsSync(cwd + '/mod-pack.conf.json')) {
             if (err) console.warn(`Directory ${cwd + dir} does not exist.`);
             else {
               fs.mkdir(`${cwd}/out/${serverFoldername}${dir}`, ()=>{
-              fse.copy(cwd + dir, `${cwd}/out/${serverFoldername}${dir}`, { overwrite: true }, (err) => {
-                if (err) console.error('Failed to copy directory', cwd + dir, 'to server');
+                fse.copy(cwd + dir, `${cwd}/out/${serverFoldername}${dir}`, { overwrite: true }, (err) => {
+                  if (err) console.error('Failed to copy directory', cwd + dir, 'to server');
+                });
               });
-              });
+
+              setTimeout(() => {}, 1000);
             }
           });
           progBar.increment();
@@ -215,37 +227,7 @@ if (fs.existsSync(cwd + '/mod-pack.conf.json')) {
         progBar.stop();
         console.log('Includes copied to serverpack!');
 
-        const serverOut = fs.createWriteStream(`${cwd}/out/${serverFoldername}.zip`);
-        const serverZip = archiver('zip', {
-          zlib: { level: 9 }
-        });
-
-        serverOut.on('close', () => {
-          console.log(`Wrote ${serverZip.pointer()} bytes to ${cwd}/out/${serverFoldername}.zip`);
-        });
-
-        serverOut.on('end', () => {
-          console.log('All server data saved.');
-        });
-
-        serverZip.on('warning', () => {
-          if (err.code === 'ENOENT') {
-            console.error('[SERVER]', err);
-          } else {
-            // throw error
-            throw err;
-          }
-        });
-
-        serverZip.on('error', (err) => {
-          throw err;
-        });
-
-        serverZip.pipe(serverOut);
-
-        serverZip.directory(`${cwd}/out/${serverFoldername}`, false);
-
-        serverZip.finalize();
+        setTimeout(() => {}, 1000);
       });
     }
   });
